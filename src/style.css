@@ -3,5 +3,15 @@
 }
 
 #appName {
-    color: purple;
+    color: #0B5ED7;
+}
+
+#tableHeader {
+  background-color: #212529;
+  color: white;
+}
+
+#msgEmptyTable {
+  text-align: center;
+  font-size: 20px;
 }

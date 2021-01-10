@@ -3,7 +3,6 @@ import NavBarItem from './NavBarItem'
 import { APP_NAME } from '../contantes'
 import '../style.css'
 
-
 class NavBar extends Component {
     constructor(props) {
         super(props);
