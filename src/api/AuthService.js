@@ -7,7 +7,7 @@ class AuthService {
         axios.post(`${AUTH_ENDPOINT}/login`, {
             username: username, password: password
         }).then(response => {
-            const jwrToken = response.headers['authorization'].replace("Bearer ", "");
+            const jwrToken = response.headers['Authorization'].replace("Bearer ", "");
             sessionStorage.setItem(JWT_TOKEN, jwrToken);
             onLogin(true);
         }).catch(error => {
@@ -15,6 +15,14 @@ class AuthService {
             onLogin(false);
         });
     }
+
+    getJWTToken() {
+        return sessionStorage.getItem(JWT_TOKEN);
+    }
+    isAuthentication() {
+        return this.getJWTToken() != null;
+    }
+
 }
 
 export default new AuthService();

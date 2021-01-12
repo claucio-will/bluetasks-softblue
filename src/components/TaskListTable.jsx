@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
 import { toast, ToastContainer } from 'react-toastify';
-import TaskService from "../api/task_service"
+import TaskService from "../api/TaskService"
 import 'react-toastify/dist/ReactToastify.css'
 import { Redirect } from 'react-router-dom';
+import AuthService from '../api/AuthService';
+import Spinner from './Spinner';
+import Alert from './Alert'
 
 
 export default class TaskListTable extends Component {
@@ -12,7 +15,9 @@ export default class TaskListTable extends Component {
 
         this.state = {
             tasks: [],
-            editId: 0
+            editId: 0,
+            loading: false,
+            alert: null
         }
 
         this.onDeleteHandler = this.onDeleteHandler.bind(this);
@@ -25,14 +30,25 @@ export default class TaskListTable extends Component {
     }
 
     listTasks() {
-        this.setState({ tasks: TaskService.list() })
+        if (!AuthService.isAuthentication) {
+            return;
+        }
+        this.setState({ loading: true });
+        TaskService.list(
+            tasks => this.setState({ tasks: tasks, loading: false }),
+            error => this.setErrorState(error)
+        );
+    }
+
+    setErrorState(error) {
+        this.setState({alert: `Erro na requisição: ${error.message}`, loading: false})
     }
 
     onDeleteHandler(id) {
-        if (window.confirm('Deseja realmente excluir essa tarefa ?')) {
+        if (window.confirm('Deseja Realmente Excluir Essa Tarefa ?')) {
             TaskService.delete(id);
             this.listTasks();
-            toast.success('Tarefa excluida!', { position: toast.POSITION_BOTTOM_LEFT });
+            toast.success('Tarefa Excluida!', { position: toast.POSITION_BOTTOM_LEFT });
         }
     }
     onEditHandler(id) {
@@ -46,18 +62,26 @@ export default class TaskListTable extends Component {
     }
 
     render() {
+        if (!AuthService.isAuthentication()) {
+            return <Redirect to="/login" />
+        }
         if (this.state.editId > 0) {
             return <Redirect to={`/form/${this.state.editId}`} />
         }
         return (
-            <>
-                <table className="table table-striped">
-                    <TableHeader />
-                    {this.state.tasks.length > 0 ?
-                        <TableBody tasks={this.state.tasks} onDelete={this.onDeleteHandler} onStatusChange={this.onStatusChangeHandler} onEdit={this.onEditHandler} /> :
-                        <EmptyTableBody />}
-                </table>
+            <> 
+                <h1>Lista de Tarefas</h1> 
+                {this.state.alert != null ? <Alert message={this.state.alert} /> : "" }
+                {this.state.loading ? <Spinner /> :
+                    <table className="table table-striped">
+                        <TableHeader />
+                        {this.state.tasks.length > 0 ?
+                            <TableBody tasks={this.state.tasks} onDelete={this.onDeleteHandler} onStatusChange={this.onStatusChangeHandler} onEdit={this.onEditHandler} /> :
+                            <EmptyTableBody />}
+                    </table>
+                }
                 <ToastContainer autoClose={3000} />
+
             </>
         )
     }
@@ -104,7 +128,7 @@ function TableBody(props) {
 function EmptyTableBody() {
     return (
         <tbody>
-            <tr><td id="msgEmptyTable" colSpan="4">Sem tarefas cadastradas no momento!</td></tr>
+            <tr><td id="msgEmptyTable" colSpan="4">Sem Tarefas Cadastradas no Momento</td></tr>
         </tbody>
     );
 }

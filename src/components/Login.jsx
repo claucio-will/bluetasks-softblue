@@ -41,6 +41,10 @@ export default class Login extends Component {
     }
 
     render() {
+        if (AuthService.isAuthentication()) {
+          return <Redirect to="/" />
+      }
+
         if (this.state.loggedIn) {
             return <Redirect to="/"/>
         }

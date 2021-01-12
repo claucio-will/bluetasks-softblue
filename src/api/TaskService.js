@@ -1,3 +1,7 @@
+import axios from 'axios';
+import { API_ENDPOINT } from '../contantes';
+import AuthService from './AuthService'
+
 class TaskService {
     constructor() {
         this.tasks = [
@@ -7,8 +11,10 @@ class TaskService {
         ]
     }
 
-    list() {
-        return this.tasks;
+    list(onFech, onError) {
+        axios.get(`${API_ENDPOINT}/task?sort=whenToDo,asc`, this.buildAuthHeader())
+            .then(response => onFech(response.data.content))
+            .catch(error => onError(error));
     }
     delete(id) {
         this.tasks = this.tasks.filter(task => task.id !== id);
@@ -25,6 +31,15 @@ class TaskService {
             const taskId = Math.max(...this.tasks.map(t => t.id)) + 1
             task.id = taskId;
             this.tasks.push(task);
+        }
+    }
+
+    buildAuthHeader() {
+        return {
+            headers: { 
+             'Authorization': `Bearer  ${AuthService.getJWTToken()}`
+               
+            }
         }
     }
 }

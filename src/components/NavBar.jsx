@@ -3,6 +3,7 @@ import NavBarItem from './NavBarItem'
 import { APP_NAME } from '../contantes'
 import '../style.css'
 
+
 class NavBar extends Component {
     constructor(props) {
         super(props);
@@ -11,7 +12,6 @@ class NavBar extends Component {
             items: [
                 { name: "Listar Tarefas", href: "/", active: true },
                 { name: "Nova Tarefa", href: "/form", active: false },
-
             ]
         }
 
@@ -39,9 +39,11 @@ class NavBar extends Component {
                             <span className="navbar-toggler-icon"></span>
                         </button>
                         <div className="collapse navbar-collapse" id="navbarText">
+
                             <div className="navbar-nav mr-auto">
                                 {this.state.items.map((i) => <NavBarItem key={i.name} item={i} name={i.name} href={i.href} onClick={this.onClickHandler} />)}
                             </div>
+
                         </div>
                     </div>
                 </nav>
